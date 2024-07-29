@@ -1,14 +1,14 @@
 const { v4 } = require("uuid");
-const { PDFLoader } = require("langchain/document_loaders/fs/pdf");
 const {
   createdDate,
   trashFile,
   writeToServerDocuments,
-} = require("../../utils/files");
-const { tokenizeString } = require("../../utils/tokenizer");
+} = require("../../../utils/files");
+const { tokenizeString } = require("../../../utils/tokenizer");
 const { default: slugify } = require("slugify");
+const PDFLoader = require("./PDFLoader");
 
-async function asPDF({ fullFilePath = "", filename = "" }) {
+async function asPdf({ fullFilePath = "", filename = "" }) {
   const pdfLoader = new PDFLoader(fullFilePath, {
     splitPages: true,
   });
@@ -16,6 +16,7 @@ async function asPDF({ fullFilePath = "", filename = "" }) {
   console.log(`-- Working ${filename} --`);
   const pageContent = [];
   const docs = await pdfLoader.load();
+
   for (const doc of docs) {
     console.log(
       `-- Parsing content from pg ${
@@ -60,4 +61,4 @@ async function asPDF({ fullFilePath = "", filename = "" }) {
   return { success: true, reason: null, documents: [document] };
 }
 
-module.exports = asPDF;
+module.exports = asPdf;
