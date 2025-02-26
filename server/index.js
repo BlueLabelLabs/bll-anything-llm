@@ -24,6 +24,9 @@ const { workspaceThreadEndpoints } = require("./endpoints/workspaceThreads");
 const { documentEndpoints } = require("./endpoints/document");
 const { agentWebsocket } = require("./endpoints/agentWebsocket");
 const { experimentalEndpoints } = require("./endpoints/experimental");
+const { browserExtensionEndpoints } = require("./endpoints/browserExtension");
+const { communityHubEndpoints } = require("./endpoints/communityHub");
+const { agentFlowEndpoints } = require("./endpoints/agentFlows");
 const app = express();
 const apiRouter = express.Router();
 const FILE_LIMIT = "3GB";
@@ -58,9 +61,14 @@ documentEndpoints(apiRouter);
 agentWebsocket(apiRouter);
 experimentalEndpoints(apiRouter);
 developerEndpoints(app, apiRouter);
+communityHubEndpoints(apiRouter);
+agentFlowEndpoints(apiRouter);
 
 // Externally facing embedder endpoints
 embeddedEndpoints(apiRouter);
+
+// Externally facing browser extension endpoints
+browserExtensionEndpoints(apiRouter);
 
 if (process.env.NODE_ENV !== "development") {
   const { MetaGenerator } = require("./utils/boot/MetaGenerator");

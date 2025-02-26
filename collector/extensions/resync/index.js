@@ -59,6 +59,7 @@ async function resyncConfluence({ chunkSource }, response) {
     const { success, reason, content } = await fetchConfluencePage({
       pageUrl: `https:${source.pathname}`, // need to add back the real protocol
       baseUrl: source.searchParams.get('baseUrl'),
+      spaceKey: source.searchParams.get('spaceKey'),
       accessToken: source.searchParams.get('token'),
       username: source.searchParams.get('username'),
     });
@@ -94,7 +95,7 @@ async function resyncGithub({ chunkSource }, response) {
       sourceFilePath: source.searchParams.get('path'),
     });
 
-    if (!success) throw new Error(`Failed to sync Github file content. ${reason}`);
+    if (!success) throw new Error(`Failed to sync GitHub file content. ${reason}`);
     response.status(200).json({ success, content });
   } catch (e) {
     console.error(e);

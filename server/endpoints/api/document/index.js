@@ -1,9 +1,10 @@
 const { Telemetry } = require("../../../models/telemetry");
 const { validApiKey } = require("../../../utils/middleware/validApiKey");
-const { handleFileUpload } = require("../../../utils/files/multer");
+const { handleAPIFileUpload } = require("../../../utils/files/multer");
 const {
   viewLocalFiles,
   findDocumentInDocuments,
+  getDocumentsByFolder,
   normalizePath,
   isWithin,
 } = require("../../../utils/files");
@@ -23,7 +24,7 @@ function apiDocumentEndpoints(app) {
 
   app.post(
     "/v1/document/upload",
-    [validApiKey, handleFileUpload],
+    [validApiKey, handleAPIFileUpload],
     async (request, response) => {
       /*
     #swagger.tags = ['Documents']
@@ -31,7 +32,6 @@ function apiDocumentEndpoints(app) {
     #swagger.requestBody = {
       description: 'File to be uploaded.',
       required: true,
-      type: 'file',
       content: {
         "multipart/form-data": {
           schema: {
@@ -40,8 +40,10 @@ function apiDocumentEndpoints(app) {
               file: {
                 type: 'string',
                 format: 'binary',
+                description: 'The file to upload'
               }
-            }
+            },
+            required: ['file']
           }
         }
       }
@@ -131,7 +133,6 @@ function apiDocumentEndpoints(app) {
     #swagger.requestBody = {
       description: 'Link of web address to be scraped.',
       required: true,
-      type: 'object',
       content: {
           "application/json": {
             schema: {
@@ -229,7 +230,6 @@ function apiDocumentEndpoints(app) {
      #swagger.requestBody = {
       description: 'Text content and metadata of the file to be saved to the system. Use metadata-schema endpoint to get the possible metadata keys',
       required: true,
-      type: 'object',
       content: {
         "application/json": {
           schema: {
@@ -396,6 +396,66 @@ function apiDocumentEndpoints(app) {
       response.sendStatus(500).end();
     }
   });
+
+  app.get(
+    "/v1/documents/folder/:folderName",
+    [validApiKey],
+    async (request, response) => {
+      /*
+    #swagger.tags = ['Documents']
+    #swagger.description = 'Get all documents stored in a specific folder.'
+    #swagger.parameters['folderName'] = {
+      in: 'path',
+      description: 'Name of the folder to retrieve documents from',
+      required: true,
+      type: 'string'
+    }
+    #swagger.responses[200] = {
+      content: {
+        "application/json": {
+          schema: {
+            type: 'object',
+            example: {
+              folder: "custom-documents",
+              documents: [
+                {
+                  name: "document1.json",
+                  type: "file",
+                  cached: false,
+                  pinnedWorkspaces: [],
+                  watched: false,
+                  more: "data",
+                },
+                {
+                  name: "document2.json",
+                  type: "file",
+                  cached: false,
+                  pinnedWorkspaces: [],
+                  watched: false,
+                  more: "data",
+                },
+              ]
+            }
+          }
+        }
+      }
+    }
+    #swagger.responses[403] = {
+      schema: {
+        "$ref": "#/definitions/InvalidAPIKey"
+      }
+    }
+    */
+      try {
+        const { folderName } = request.params;
+        const result = await getDocumentsByFolder(folderName);
+        response.status(200).json(result);
+      } catch (e) {
+        console.error(e.message, e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
 
   app.get(
     "/v1/document/accepted-file-types",
@@ -571,11 +631,10 @@ function apiDocumentEndpoints(app) {
       #swagger.requestBody = {
         description: 'Name of the folder to create.',
         required: true,
-        type: 'object',
         content: {
           "application/json": {
             schema: {
-              type: 'object',
+              type: 'string',
               example: {
                 "name": "new-folder"
               }
@@ -638,7 +697,6 @@ function apiDocumentEndpoints(app) {
       #swagger.requestBody = {
         description: 'Array of objects containing source and destination paths of files to move.',
         required: true,
-        type: 'object',
         content: {
           "application/json": {
             schema: {
@@ -686,6 +744,12 @@ function apiDocumentEndpoints(app) {
           const sourcePath = path.join(documentsPath, normalizePath(from));
           const destinationPath = path.join(documentsPath, normalizePath(to));
           return new Promise((resolve, reject) => {
+            if (
+              !isWithin(documentsPath, sourcePath) ||
+              !isWithin(documentsPath, destinationPath)
+            )
+              return reject("Invalid file location");
+
             fs.rename(sourcePath, destinationPath, (err) => {
               if (err) {
                 console.error(`Error moving file ${from} to ${to}:`, err);

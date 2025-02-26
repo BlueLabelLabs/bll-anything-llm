@@ -5,7 +5,6 @@ import PasswordModal, { usePasswordModal } from "@/components/Modals/Password";
 import { isMobile } from "react-device-detect";
 import { FullScreenLoader } from "@/components/Preloader";
 import UserMenu from "@/components/UserMenu";
-import { FineTuningAlert } from "../FineTuning/Banner";
 
 export default function Main() {
   const { loading, requiresAuth, mode } = usePasswordModal();
@@ -16,14 +15,9 @@ export default function Main() {
   }
 
   return (
-    <>
-      <UserMenu>
-        <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
-          {!isMobile && <Sidebar />}
-          <DefaultChatContainer />
-        </div>
-      </UserMenu>
-      <FineTuningAlert />
-    </>
+    <div className="w-screen h-screen overflow-hidden bg-theme-bg-container flex">
+      {!isMobile && <Sidebar />}
+      <DefaultChatContainer />
+    </div>
   );
 }

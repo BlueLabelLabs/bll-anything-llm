@@ -9,7 +9,7 @@ import OllamaLogo from "@/media/llmprovider/ollama.png";
 import LMStudioLogo from "@/media/llmprovider/lmstudio.png";
 import LocalAiLogo from "@/media/llmprovider/localai.png";
 import TogetherAILogo from "@/media/llmprovider/togetherai.png";
-import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
+import FireworksAILogo from "@/media/llmprovider/fireworksai.jpeg";
 import MistralLogo from "@/media/llmprovider/mistral.jpeg";
 import HuggingFaceLogo from "@/media/llmprovider/huggingface.png";
 import PerplexityLogo from "@/media/llmprovider/perplexity.png";
@@ -19,7 +19,11 @@ import KoboldCPPLogo from "@/media/llmprovider/koboldcpp.png";
 import TextGenWebUILogo from "@/media/llmprovider/text-generation-webui.png";
 import LiteLLMLogo from "@/media/llmprovider/litellm.png";
 import AWSBedrockLogo from "@/media/llmprovider/bedrock.png";
-
+import DeepSeekLogo from "@/media/llmprovider/deepseek.png";
+import APIPieLogo from "@/media/llmprovider/apipie.png";
+import NovitaLogo from "@/media/llmprovider/novita.png";
+import XAILogo from "@/media/llmprovider/xai.png";
+import NvidiaNimLogo from "@/media/llmprovider/nvidia-nim.png";
 import CohereLogo from "@/media/llmprovider/cohere.png";
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
 import GenericOpenAiOptions from "@/components/LLMSelection/GenericOpenAiOptions";
@@ -27,12 +31,12 @@ import AzureAiOptions from "@/components/LLMSelection/AzureAiOptions";
 import AnthropicAiOptions from "@/components/LLMSelection/AnthropicAiOptions";
 import LMStudioOptions from "@/components/LLMSelection/LMStudioOptions";
 import LocalAiOptions from "@/components/LLMSelection/LocalAiOptions";
-import NativeLLMOptions from "@/components/LLMSelection/NativeLLMOptions";
 import GeminiLLMOptions from "@/components/LLMSelection/GeminiLLMOptions";
 import OllamaLLMOptions from "@/components/LLMSelection/OllamaLLMOptions";
 import MistralOptions from "@/components/LLMSelection/MistralOptions";
 import HuggingFaceOptions from "@/components/LLMSelection/HuggingFaceOptions";
 import TogetherAiOptions from "@/components/LLMSelection/TogetherAiOptions";
+import FireworksAiOptions from "@/components/LLMSelection/FireworksAiOptions";
 import PerplexityOptions from "@/components/LLMSelection/PerplexityOptions";
 import OpenRouterOptions from "@/components/LLMSelection/OpenRouterOptions";
 import GroqAiOptions from "@/components/LLMSelection/GroqAiOptions";
@@ -41,16 +45,18 @@ import KoboldCPPOptions from "@/components/LLMSelection/KoboldCPPOptions";
 import TextGenWebUIOptions from "@/components/LLMSelection/TextGenWebUIOptions";
 import LiteLLMOptions from "@/components/LLMSelection/LiteLLMOptions";
 import AWSBedrockLLMOptions from "@/components/LLMSelection/AwsBedrockLLMOptions";
+import DeepSeekOptions from "@/components/LLMSelection/DeepSeekOptions";
+import ApiPieLLMOptions from "@/components/LLMSelection/ApiPieOptions";
+import NovitaLLMOptions from "@/components/LLMSelection/NovitaLLMOptions";
+import XAILLMOptions from "@/components/LLMSelection/XAiLLMOptions";
+import NvidiaNimOptions from "@/components/LLMSelection/NvidiaNimOptions";
 
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import System from "@/models/system";
 import paths from "@/utils/paths";
 import showToast from "@/utils/toast";
 import { useNavigate } from "react-router-dom";
-
-const TITLE = "LLM Preference";
-const DESCRIPTION =
-  "AnythingLLM can work with many LLM providers. This will be the service which handles chatting.";
+import { useTranslation } from "react-i18next";
 
 const LLMS = [
   {
@@ -82,6 +88,14 @@ const LLMS = [
     description: "Google's largest and most capable AI model",
   },
   {
+    name: "NVIDIA NIM",
+    value: "nvidia-nim",
+    logo: NvidiaNimLogo,
+    options: (settings) => <NvidiaNimOptions settings={settings} />,
+    description:
+      "Run full parameter LLMs directly on your NVIDIA RTX GPU using NVIDIA NIM.",
+  },
+  {
     name: "HuggingFace",
     value: "huggingface",
     logo: HuggingFaceLogo,
@@ -95,6 +109,14 @@ const LLMS = [
     logo: OllamaLogo,
     options: (settings) => <OllamaLLMOptions settings={settings} />,
     description: "Run LLMs locally on your own machine.",
+  },
+  {
+    name: "Novita AI",
+    value: "novita",
+    logo: NovitaLogo,
+    options: (settings) => <NovitaLLMOptions settings={settings} />,
+    description:
+      "Reliable, Scalable, and Cost-Effective for LLMs from Novita AI",
   },
   {
     name: "LM Studio",
@@ -131,6 +153,14 @@ const LLMS = [
     logo: TogetherAILogo,
     options: (settings) => <TogetherAiOptions settings={settings} />,
     description: "Run open source models from Together AI.",
+  },
+  {
+    name: "Fireworks AI",
+    value: "fireworksai",
+    logo: FireworksAILogo,
+    options: (settings) => <FireworksAiOptions settings={settings} />,
+    description:
+      "The fastest and most efficient inference engine to build production-ready, compound AI systems.",
   },
   {
     name: "Mistral",
@@ -177,6 +207,20 @@ const LLMS = [
     description: "Run LiteLLM's OpenAI compatible proxy for various LLMs.",
   },
   {
+    name: "DeepSeek",
+    value: "deepseek",
+    logo: DeepSeekLogo,
+    options: (settings) => <DeepSeekOptions settings={settings} />,
+    description: "Run DeepSeek's powerful LLMs.",
+  },
+  {
+    name: "APIpie",
+    value: "apipie",
+    logo: APIPieLogo,
+    options: (settings) => <ApiPieLLMOptions settings={settings} />,
+    description: "A unified API of AI services from leading providers",
+  },
+  {
     name: "Generic OpenAI",
     value: "generic-openai",
     logo: GenericOpenAiLogo,
@@ -192,12 +236,11 @@ const LLMS = [
     description: "Run powerful foundation models privately with AWS Bedrock.",
   },
   {
-    name: "Native",
-    value: "native",
-    logo: AnythingLLMIcon,
-    options: (settings) => <NativeLLMOptions settings={settings} />,
-    description:
-      "Use a downloaded custom Llama model for chatting on this AnythingLLM instance.",
+    name: "xAI",
+    value: "xai",
+    logo: XAILogo,
+    options: (settings) => <XAILLMOptions settings={settings} />,
+    description: "Run xAI's powerful LLMs like Grok-2 and more.",
   },
 ];
 
@@ -206,6 +249,7 @@ export default function LLMPreference({
   setForwardBtn,
   setBackBtn,
 }) {
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredLLMs, setFilteredLLMs] = useState([]);
   const [selectedLLM, setSelectedLLM] = useState(null);
@@ -214,6 +258,9 @@ export default function LLMPreference({
   const hiddenSubmitButtonRef = useRef(null);
   const isHosted = window.location.hostname.includes("useanything.com");
   const navigate = useNavigate();
+
+  const TITLE = t("onboarding.llm.title");
+  const DESCRIPTION = t("onboarding.llm.description");
 
   useEffect(() => {
     async function fetchKeys() {
@@ -269,18 +316,18 @@ export default function LLMPreference({
   return (
     <div>
       <form ref={formRef} onSubmit={handleSubmit} className="w-full">
-        <div className="w-full relative border-slate-300/40 shadow border-2 rounded-lg text-white">
+        <div className="w-full relative border-theme-chat-input-border shadow border-2 rounded-lg text-white">
           <div className="w-full p-4 absolute top-0 rounded-t-lg backdrop-blur-sm">
             <div className="w-full flex items-center sticky top-0">
               <MagnifyingGlass
                 size={16}
                 weight="bold"
-                className="absolute left-4 z-30 text-white"
+                className="absolute left-4 z-30 text-theme-text-primary"
               />
               <input
                 type="text"
                 placeholder="Search LLM providers"
-                className="bg-zinc-600 z-20 pl-10 h-[38px] rounded-full w-full px-4 py-1 text-sm border-2 border-slate-300/40 outline-none focus:outline-primary-button active:outline-primary-button outline-none text-white"
+                className="bg-theme-bg-secondary placeholder:text-theme-text-secondary z-20 pl-10 h-[38px] rounded-full w-full px-4 py-1 text-sm border border-theme-chat-input-border outline-none focus:outline-primary-button active:outline-primary-button outline-none text-theme-text-primary"
                 onChange={(e) => setSearchQuery(e.target.value)}
                 autoComplete="off"
                 onKeyDown={(e) => {

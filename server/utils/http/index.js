@@ -64,6 +64,8 @@ function parseAuthHeader(headerValue = null, apiKey = null) {
 }
 
 function safeJsonParse(jsonString, fallback = null) {
+  if (jsonString === null) return fallback;
+
   try {
     return JSON.parse(jsonString);
   } catch {}
@@ -76,7 +78,7 @@ function safeJsonParse(jsonString, fallback = null) {
   }
 
   try {
-    return extract(jsonString)[0];
+    return extract(jsonString)?.[0] || fallback;
   } catch {}
 
   return fallback;

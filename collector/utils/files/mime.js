@@ -1,7 +1,6 @@
 const MimeLib = require("mime");
-
 class MimeDetector {
-  nonTextTypes = ["multipart", "image", "model", "audio", "video"];
+  nonTextTypes = ["multipart", "model", "audio", "video", "font"];
   badMimes = [
     "application/octet-stream",
     "application/zip",
@@ -37,14 +36,26 @@ class MimeDetector {
           "lua",
           "pas",
           "r",
+          "go",
+          "ino",
+          "hpp",
+          "linq",
+          "cs",
         ],
       },
       true
     );
   }
 
+  /**
+   * Returns the MIME type of the file. If the file has no extension found, it will be processed as a text file.
+   * @param {string} filepath
+   * @returns {string}
+   */
   getType(filepath) {
-    return this.lib.getType(filepath);
+    const parsedMime = this.lib.getType(filepath);
+    if (!!parsedMime) return parsedMime;
+    return null;
   }
 }
 
